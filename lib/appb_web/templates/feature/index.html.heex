@@ -1,0 +1,28 @@
+<h1>Listing Features</h1>
+<!-- 
+<span><%= link "New Feature", to: Routes.feature_path(@conn, :new) %></span>
+-->
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for feature <- @features do %>
+    <tr>
+      <td><%= feature.name %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.feature_path(@conn, :show, feature) %></span>
+        <span><%= link "Edit", to: Routes.feature_path(@conn, :edit, feature) %></span>
+        <span><%= link "Delete", to: Routes.feature_path(@conn, :delete, feature), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+

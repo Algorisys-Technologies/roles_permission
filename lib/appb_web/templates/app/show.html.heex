@@ -1,0 +1,53 @@
+<h1>Show App</h1>
+
+<ul>
+  <li>
+    <strong>Name:</strong>
+    <%= @app.name %>
+  </li>
+</ul>
+
+
+<h4> Features </h4><span>
+<%= link "New Feature", to: Routes.feature_path(@conn, :new, app_id: @app.id) %></span>
+<ul>
+  <%= for feature <- @app.features do %>
+    <li>
+      <%= feature.name %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <%= link "New Permission", to: Routes.permission_path(@conn, :new, app_id: @app.id, feature_id: "#{feature.id}") %>
+      
+    <!--
+    <ul>
+      <%= for permission <- @app.permissions do %>
+        <%= if feature.id == permission.feature_id do %>
+          <li><%= permission.name %></li>
+        <% end %>
+      <% end %>
+    </ul>
+    -->
+
+    <ul>
+      <%= for p_feature <- @permission do %>
+        <%= if feature.id == p_feature.id do %>
+          <%= for permissions <- p_feature.permissions do %>
+            <li><%= permissions.name %></li>
+          <% end %>
+        <% end %>
+      <% end %>
+    </ul>
+
+    </li>
+  <% end %>
+</ul>
+
+
+<h4> Roles </h4>
+<span><%= link "New Role", to: Routes.role_path(@conn, :new, app_id: @app.id) %></span>
+<ul>
+  <%= for role <- @app.roles do %>
+    <li><%= role.name %></li>
+  <% end %>
+</ul>
+
+<span><%= link "Edit", to: Routes.app_path(@conn, :edit, @app) %></span> |
+<span><%= link "Back", to: Routes.app_path(@conn, :index) %></span>
