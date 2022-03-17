@@ -54,7 +54,7 @@ defmodule AppbWeb.AppController do
       Repo.get!(App, id)
       |> Repo.preload(features: [:permissions])
 
-    IO.inspect(app, label: "app")
+    # IO.inspect(app, label: "app")
 
     render(conn, "show.html", app: app, permission: permission.features)
   end

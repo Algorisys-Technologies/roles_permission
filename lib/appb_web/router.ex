@@ -80,11 +80,19 @@ defmodule AppbWeb.Router do
     put("/users/settings", UserSettingsController, :update)
     get("/users/settings/confirm_email/:token", UserSettingsController, :confirm_email)
 
-    # This routes can only after login...
+    # This routes can only access after login...
+
+    # mix phx.gen.html AppContext App apps name:string user_id:references:users
     resources("/apps", AppController)
+    # mix phx.gen.html FeatureContext Feature features name app_id:references:apps
     resources("/features", FeatureController)
+    # mix phx.gen.html PermissionContext Permission permissions name app_id:references:apps feature_id:references:features
     resources("/permissions", PermissionController)
+    # mix phx.gen.html RoleContext Role roles name app_id:references:apps
     resources("/roles", RoleController)
+    # mix phx.gen.html DefineRoleLevelPermissionContext DefineRoleLevelPermission definerolelevelpermissions conditionText:string conditionjson:string app_id:references:apps feature_id:references:features
+    # permission_id:references:permissions role_id:references:roles
+    resources "/definerolelevelpermissions", DefineRoleLevelPermissionController
   end
 
   scope "/", AppbWeb do

@@ -1,0 +1,49 @@
+<.form let={f} for={@changeset} action={@action}>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <h3><b>App name</b></h3>
+  <h4><%= @apps.name %></h4>
+
+  <h3><b> Role </b></h3>
+  <%= select f, :role_id, @roles, value: @roles_id %>
+
+  <%= for feature <- @apps.features do %>
+    <ul>
+      <li>
+        <input name="define_role_level_permission[feature_id]" type="checkbox" value={feature.id}>
+
+       <!-- If you want to select multiple feature same time add [] in name
+       <input name="define_role_level_permission[feature_id][]" type="checkbox" value={feature.id}>
+        -->
+
+        <%= feature.name %> 
+        <ul>
+          <%= for permission <- @apps.permissions do %>
+            <%= if feature.id == permission.feature_id do %>
+              <li> 
+                <input name="define_role_level_permission[permission_id][]" type="checkbox" value={permission.id}>
+                <%= permission.name %>
+              </li>
+            <% end %>
+          <% end %>
+        </ul>
+      </li>
+    </ul>
+  <% end %>
+
+  <%= label f, :conditionText %>
+  <%= text_input f, :conditionText %>
+  <%= error_tag f, :conditionText %>
+
+  <%= label f, :conditionjson %>
+  <%= text_input f, :conditionjson %>
+  <%= error_tag f, :conditionjson %>
+
+  <div>
+    <%= submit "Save" %>
+  </div>
+</.form>

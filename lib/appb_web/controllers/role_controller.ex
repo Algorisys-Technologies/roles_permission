@@ -9,9 +9,9 @@ defmodule AppbWeb.RoleController do
     render(conn, "index.html", roles: roles)
   end
 
-  def new(conn, params) do
+  def new(conn, _params) do
     changeset = RoleContext.change_role(%Role{})
-    render(conn, "new.html", changeset: changeset, params: params)
+    render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"role" => role_params}) do

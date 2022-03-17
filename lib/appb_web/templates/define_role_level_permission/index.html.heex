@@ -1,0 +1,29 @@
+<h1>Listing Definerolelevelpermissions</h1>
+
+<span><%= link "New Define role level permission", to: Routes.define_role_level_permission_path(@conn, :new) %></span>
+
+<table>
+  <thead>
+    <tr>
+      <th>Conditiontext</th>
+      <th>Conditionjson</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for define_role_level_permission <- @definerolelevelpermissions do %>
+    <tr>
+      <td><%= define_role_level_permission.conditionText %></td>
+      <td><%= define_role_level_permission.conditionjson %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.define_role_level_permission_path(@conn, :show, define_role_level_permission) %></span>
+        <span><%= link "Edit", to: Routes.define_role_level_permission_path(@conn, :edit, define_role_level_permission) %></span>
+        <span><%= link "Delete", to: Routes.define_role_level_permission_path(@conn, :delete, define_role_level_permission), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+

@@ -2,11 +2,13 @@ defmodule Appb.RoleContext.Role do
   use Ecto.Schema
   import Ecto.Changeset
   alias Appb.AppContext.App
+  alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
 
   schema "roles" do
     field :name, :string
     # field :app_id, :id
     belongs_to(:apps, App, foreign_key: :app_id)
+    has_many(:definerolelevelpermissions, DefineRoleLevelPermission, foreign_key: :role_id)
     timestamps()
   end
 
