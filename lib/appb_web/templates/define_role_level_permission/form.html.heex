@@ -14,23 +14,52 @@
   <%= for feature <- @apps.features do %>
     <ul>
       <li>
+       <!--
         <input name="define_role_level_permission[feature_id]" type="checkbox" value={feature.id}>
 
-       <!-- If you want to select multiple feature same time add [] in name
+        If you want to select multiple feature same time add [] in name
        <input name="define_role_level_permission[feature_id][]" type="checkbox" value={feature.id}>
         -->
 
         <%= feature.name %> 
-        <ul>
-          <%= for permission <- @apps.permissions do %>
-            <%= if feature.id == permission.feature_id do %>
-              <li> 
-                <input name="define_role_level_permission[permission_id][]" type="checkbox" value={permission.id}>
-                <%= permission.name %>
-              </li>
+        <%= if @definerolelevelpermissions do %>
+          <%= for rolelevelpermission <- @definerolelevelpermissions do %>
+            <%= for permission <- @apps.permissions do %>
+              <%= if feature.id == permission.feature_id do %>
+                <%= if feature.id == rolelevelpermission.feature_id do %>
+                  <%= if rolelevelpermission.permission_id == permission.id do %>
+                    <ul>
+                      <li> 
+                        <input name="define_role_level_permission[permission_id][]"
+                        checked type="checkbox" value={permission.id}>
+                        <%= permission.name %>
+                      </li>
+                    </ul>
+                  <% else %>
+                    <ul>
+                      <li> 
+                        <input name="define_role_level_permission[permission_id][]"
+                        type="checkbox" value={permission.id}>
+                        <%= permission.name %>
+                      </li>
+                    </ul>
+                  <% end %>
+                <% end %>
+              <% end %>
             <% end %>
           <% end %>
-        </ul>
+        <% else %>
+          <ul>
+            <%= for permission <- @apps.permissions do %>
+              <%= if feature.id == permission.feature_id do %>
+                <li> 
+                  <input name="define_role_level_permission[permission_id][]" type="checkbox" value={permission.id}>
+                  <%= permission.name %>
+                </li>
+              <% end %>
+            <% end %>
+          </ul>
+        <% end %>
       </li>
     </ul>
   <% end %>
