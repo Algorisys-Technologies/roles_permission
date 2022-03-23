@@ -5,18 +5,9 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
   alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
   alias Appb.AppContext.App
   alias Appb.PermissionContext.Permission
+  alias Appb.FeatureContext.Feature
   alias Appb.Repo
   import Ecto.Query, only: [from: 2]
-
-
-  # <%= for rolelevelpermission <- @definerolelevelpermissions do %>
-  # <%= permission.id %>
-  # <%= if rolelevelpermission.permission_id == permission.id do %>
-  #   <li>
-  #     <input name="define_role_level_permission[permission_id][]" checked type="checkbox" value={permission.id}>
-  #     <%= permission.name %>
-  #   </li>
-  # <% else %>
 
   def index(conn, _params) do
     definerolelevelpermissions =
@@ -41,12 +32,11 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       DefineRoleLevelPermissionContext.list_definerolelevelpermissions()
 
     # IO.inspect("######################")
-    # IO.inspect(definerolelevelpermissions)
+    # IO.inspect(definerolelevelpermissions, label: "definerolelevelpermissions")
     # IO.inspect("######################")
 
-    # IO.inspect("######################")
-    # IO.inspect(app)
-    # IO.inspect("######################")
+    some = giveSome(app.features, app.permissions, definerolelevelpermissions)
+    IO.inspect(some)
 
     appRole = Enum.map(app.roles, &{"#{&1.name}", &1.id})
     appRoleId = Enum.map(app.roles, & &1.id)
@@ -56,8 +46,39 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       apps: app,
       roles: appRole,
       roles_id: appRoleId,
-      definerolelevelpermissions: definerolelevelpermissions
+      definerolelevelpermissions: definerolelevelpermissions,
+      some: some
     )
+  end
+
+  defp giveSome(_features, permissions, definerolelevelpermissions) do
+    for permission <- permissions do
+      featureDetails = Repo.get!(Feature, permission.feature_id)
+
+      if definerolelevelpermissions && definerolelevelpermissions !== [] do
+        for define <- definerolelevelpermissions do
+          p = define.id
+          if define.feature_id == permission.feature_id do
+
+            if define.permission_id == permission.id do
+              permission = Map.put(permission, :flag, true)
+              Map.put(permission, :feature_name, featureDetails.name)
+            else
+              if p == define.id do
+                # IO.inspect(p, label: "p")
+                nil
+              else
+                permission = Map.put(permission, :flag, false)
+                Map.put(permission, :feature_name, featureDetails.name)
+              end
+            end
+          end
+        end
+      else
+        permission = Map.put(permission, :flag, false)
+        Map.put(permission, :feature_name, featureDetails.name)
+      end
+    end
   end
 
   def create(conn, %{"define_role_level_permission" => define_role_level_permission_params}) do
@@ -77,10 +98,24 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     definerolelevelpermissions =
       DefineRoleLevelPermissionContext.list_definerolelevelpermissions()
 
+    for heads <- define_role_level_permission_params["permission_id"] do
+      IO.inspect(define_role_level_permission_params["permission_id"])
+      IO.inspect(heads, label: "heads")
+      permissionDetail = Repo.get!(Permission, heads)
+
+      featureId = permissionDetail.feature_id
+      roleId = define_role_level_permission_params["role_id"]
+
+      query =
+        from(d in DefineRoleLevelPermission,
+          where: d.role_id == type(^roleId, :integer) and d.feature_id == ^featureId
+        )
+
+      Repo.delete_all(query)
+    end
+
     if define_role_level_permission_params["permission_id"] do
       for head <- define_role_level_permission_params["permission_id"] do
-        IO.inspect(define_role_level_permission_params["permission_id"])
-        IO.inspect(head, label: "head")
         permissionDetail = Repo.get!(Permission, head)
 
         define_role_level_permission_params =
@@ -89,27 +124,33 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "feature_id", permissionDetail.feature_id)
 
-        roleId = define_role_level_permission_params["role_id"]
-        featureId = define_role_level_permission_params["feature_id"]
+        # roleId = define_role_level_permission_params["role_id"]
 
-        query =
-          from(d in DefineRoleLevelPermission,
-            where: d.role_id == type(^roleId, :integer) and d.feature_id == ^featureId
-          )
+        # isPermissionIdExist =
+        #   Repo.exists?(
+        #     from d in DefineRoleLevelPermission,
+        #       where:
+        #         d.permission_id == ^head and
+        #           d.role_id == ^roleId
+        #   )
 
-        Repo.delete_all(query)
-
-        IO.inspect(define_role_level_permission_params)
-
-        caseDefine(conn, define_role_level_permission_params, app, appRole, appRoleId,
-          definerolelevelpermissions: definerolelevelpermissions
+        caseDefine(
+          conn,
+          define_role_level_permission_params,
+          app,
+          appRole,
+          appRoleId,
+          definerolelevelpermissions
         )
       end
     end
 
-    caseDefine(conn, define_role_level_permission_params, app, appRole, appRoleId,
-      definerolelevelpermissions: definerolelevelpermissions
-    )
+    # caseDefine(conn, define_role_level_permission_params, app, appRole, appRoleId,
+    #   definerolelevelpermissions
+    # )
+
+    conn
+    |> redirect(to: Routes.define_role_level_permission_path(conn, :new, app: app.id))
   end
 
   defp caseDefine(
@@ -123,17 +164,18 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     case DefineRoleLevelPermissionContext.create_define_role_level_permission(
            define_role_level_permission_params
          ) do
-      {:ok, define_role_level_permission} ->
+      {:ok, _define_role_level_permission} ->
         conn
         |> put_flash(:info, "Define role level permission created successfully.")
-        |> redirect(
-          to:
-            Routes.define_role_level_permission_path(
-              conn,
-              :show,
-              define_role_level_permission
-            )
-        )
+
+      # |> redirect(
+      #   to:
+      #     Routes.define_role_level_permission_path(
+      #       conn,
+      #       :show,
+      #       define_role_level_permission
+      #     )
+      # )
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html",
