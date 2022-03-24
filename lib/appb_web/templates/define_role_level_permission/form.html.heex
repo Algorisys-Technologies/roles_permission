@@ -68,39 +68,47 @@
     <% end %>
 -->
 
-    <%= for s1 <- @some do %>
-      <%= if @definerolelevelpermissions && @definerolelevelpermissions !==[] do %>
-        <%= for s2 <- s1 do %>
-          <%= if s2 !== nil do %>
-            <%= if s2.flag do %>
-              <ul>
-                <li>
-                  <input name="define_role_level_permission[permission_id][]"
-                    checked type="checkbox" value={s2.id}>
-                  <%= s2.name %>
-                </li>
-              </ul>
+
+  <%= for feature <- @apps.features do %>
+    <ul>
+      <li>
+        <%= feature.name %> 
+        <%= for s1 <- @renderMaterial do %>
+          <%= if feature.id == s1.feature_id do %>
+            <%= if @definerolelevelpermissions && @definerolelevelpermissions !==[] do %>
+              <%= if s1 !== nil do %>
+                <%= if s1.flag do %>
+                  <ul>
+                    <li>
+                      <input name="define_role_level_permission[permission_id][]"
+                        checked type="checkbox" value={s1.id}>
+                      <%= s1.name %>
+                    </li>
+                  </ul>
+                <% else %>
+                  <ul>
+                    <li>
+                      <input name="define_role_level_permission[permission_id][]"
+                        type="checkbox" value={s1.id}>
+                      <%= s1.name %>
+                    </li>
+                  </ul>
+                <% end %>
+              <% end %>
             <% else %>
               <ul>
                 <li>
                   <input name="define_role_level_permission[permission_id][]"
-                    type="checkbox" value={s2.id}>
-                  <%= s2.name %>
+                    type="checkbox" value={s1.id}>
+                  <%= s1.name %>
                 </li>
               </ul>
             <% end %>
           <% end %>
         <% end %>
-      <% else %>
-        <ul>
-          <li>
-            <input name="define_role_level_permission[permission_id][]"
-              type="checkbox" value={s1.id}>
-            <%= s1.name %>
-          </li>
-        </ul>
-      <% end %>
-    <% end %>
+      </li>
+    </ul>
+  <% end %>
 
   <%= label f, :conditionText %>
   <%= text_input f, :conditionText %>

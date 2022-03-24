@@ -31,12 +31,9 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     definerolelevelpermissions =
       DefineRoleLevelPermissionContext.list_definerolelevelpermissions()
 
-    # IO.inspect("######################")
-    # IO.inspect(definerolelevelpermissions, label: "definerolelevelpermissions")
-    # IO.inspect("######################")
-
-    some = giveSome(app.features, app.permissions, definerolelevelpermissions)
-    IO.inspect(some)
+    render = uiRender(app.features, app.permissions, definerolelevelpermissions)
+    renderMaterial = now(render)
+    # IO.inspect(renderMaterial, label: "renderMaterial")
 
     appRole = Enum.map(app.roles, &{"#{&1.name}", &1.id})
     appRoleId = Enum.map(app.roles, & &1.id)
@@ -47,30 +44,68 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       roles: appRole,
       roles_id: appRoleId,
       definerolelevelpermissions: definerolelevelpermissions,
-      some: some
+      renderMaterial: renderMaterial
     )
   end
 
-  defp giveSome(_features, permissions, definerolelevelpermissions) do
+  defp now(render) do
+    [head | _tail] = render
+
+    if Enum.count(head) >= 2 do
+      for [s1, s2 | _] <- render do
+        if s1 !== nil do
+          isPermissionIdExist =
+            Repo.exists?(
+              from d in DefineRoleLevelPermission,
+                where: d.permission_id == ^s1.id
+            )
+
+          if s1 !== nil and s2 !== nil do
+            if s1.id == s2.id and isPermissionIdExist do
+              s1 = %{s1 | flag: true}
+              _s2 = %{s2 | flag: true}
+              s1
+            else
+              s1
+            end
+          else
+            if s1 !== nil and (s2 == nil and isPermissionIdExist) do
+              s1 = %{s1 | flag: true}
+              s1
+            else
+              s1
+            end
+          end
+        else
+          s2
+        end
+      end
+    else
+      for s1 <- render, s2 <- s1, do: s2
+    end
+  end
+
+  defp uiRender(_features, permissions, definerolelevelpermissions) do
     for permission <- permissions do
       featureDetails = Repo.get!(Feature, permission.feature_id)
+      p = permission.feature_id
 
       if definerolelevelpermissions && definerolelevelpermissions !== [] do
         for define <- definerolelevelpermissions do
-          p = define.id
           if define.feature_id == permission.feature_id do
-
             if define.permission_id == permission.id do
               permission = Map.put(permission, :flag, true)
               Map.put(permission, :feature_name, featureDetails.name)
             else
-              if p == define.id do
-                # IO.inspect(p, label: "p")
-                nil
-              else
-                permission = Map.put(permission, :flag, false)
-                Map.put(permission, :feature_name, featureDetails.name)
-              end
+              permission = Map.put(permission, :flag, false)
+              Map.put(permission, :feature_name, featureDetails.name)
+            end
+          else
+            if p == define.feature_id do
+              nil
+            else
+              permission = Map.put(permission, :flag, false)
+              Map.put(permission, :feature_name, featureDetails.name)
             end
           end
         end
@@ -99,8 +134,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       DefineRoleLevelPermissionContext.list_definerolelevelpermissions()
 
     for heads <- define_role_level_permission_params["permission_id"] do
-      IO.inspect(define_role_level_permission_params["permission_id"])
-      IO.inspect(heads, label: "heads")
+      # IO.inspect(define_role_level_permission_params["permission_id"])
+      # IO.inspect(heads, label: "heads")
       permissionDetail = Repo.get!(Permission, heads)
 
       featureId = permissionDetail.feature_id
@@ -124,6 +159,10 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "feature_id", permissionDetail.feature_id)
 
+        render = uiRender(app.features, app.permissions, definerolelevelpermissions)
+        renderMaterial = now(render)
+        # IO.inspect(renderMaterial, label: "renderMaterial")
+
         # roleId = define_role_level_permission_params["role_id"]
 
         # isPermissionIdExist =
@@ -140,7 +179,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
           app,
           appRole,
           appRoleId,
-          definerolelevelpermissions
+          definerolelevelpermissions,
+          renderMaterial: renderMaterial
         )
       end
     end
@@ -159,7 +199,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
          app,
          appRole,
          appRoleId,
-         definerolelevelpermissions
+         definerolelevelpermissions,
+         renderMaterial: renderMaterial
        ) do
     case DefineRoleLevelPermissionContext.create_define_role_level_permission(
            define_role_level_permission_params
@@ -183,7 +224,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
           apps: app,
           roles: appRole,
           roles_id: appRoleId,
-          definerolelevelpermissions: definerolelevelpermissions
+          definerolelevelpermissions: definerolelevelpermissions,
+          renderMaterial: renderMaterial
         )
     end
   end
