@@ -29,7 +29,7 @@
               <%= for permission <- @apps.permissions do %>
                 <%= if feature.id == permission.feature_id do %>
                   <%= if feature.id == rolelevelpermission.feature_id do %>
-                    <%= if rolelevelpermission.permission_id == permission.id do %>
+                    <%= if rolelevelpermission.id == permission.id do %>
                       <ul>
                         <li> 
                           <input name="define_role_level_permission[permission_id][]"
