@@ -5,7 +5,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
   alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
   alias Appb.AppContext.App
   alias Appb.PermissionContext.Permission
-  alias Appb.FeatureContext.Feature
+  # alias Appb.FeatureContext.Feature
   alias Appb.Repo
   import Ecto.Query, only: [from: 2]
 
@@ -16,9 +16,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     render(conn, "index.html", definerolelevelpermissions: definerolelevelpermissions)
   end
 
-  def new(conn, params) do
-    IO.inspect(params, label: "params")
-
+  def new(conn, _params) do
     changeset =
       DefineRoleLevelPermissionContext.change_define_role_level_permission(
         %DefineRoleLevelPermission{}
@@ -50,6 +48,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     else
       definerolelevelpermissions = roleBasedPermissions(role_id)
       renderPermissions = uiRender(app.features, app.permissions, definerolelevelpermissions)
+      IO.inspect(renderPermissions, label: "renderPermissions")
       renderMaterial = uiRenderFinal(renderPermissions, role_id)
 
       render(conn, "new.html",
@@ -105,31 +104,26 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
   defp uiRender(_features, permissions, definerolelevelpermissions) do
     for permission <- permissions do
-      featureDetails = Repo.get!(Feature, permission.feature_id)
       p = permission.feature_id
 
       if definerolelevelpermissions && definerolelevelpermissions !== [] do
         for define <- definerolelevelpermissions do
           if define.feature_id == permission.feature_id do
             if define.id == permission.id do
-              permission = Map.put(permission, :flag, true)
-              Map.put(permission, :feature_name, featureDetails.name)
+              Map.put(permission, :flag, true)
             else
-              permission = Map.put(permission, :flag, false)
-              Map.put(permission, :feature_name, featureDetails.name)
+              Map.put(permission, :flag, false)
             end
           else
             if p == define.feature_id do
               nil
             else
-              permission = Map.put(permission, :flag, false)
-              Map.put(permission, :feature_name, featureDetails.name)
+              Map.put(permission, :flag, false)
             end
           end
         end
       else
-        permission = Map.put(permission, :flag, false)
-        Map.put(permission, :feature_name, featureDetails.name)
+        Map.put(permission, :flag, false)
       end
     end
   end
@@ -209,16 +203,11 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
   defp roleBasedPermissions(role_id \\ 1) do
     query =
       from(d in DefineRoleLevelPermission,
-        where: d.role_id == type(^role_id, :integer),
-        select: d.permission_id
+        join: p in Permission,
+        where: p.id == d.permission_id and d.role_id == type(^role_id, :integer)
       )
 
-    definerolelevelpermissionsIds = Repo.all(query)
-
-    for definerolelevelpermissionsId <- definerolelevelpermissionsIds do
-      permission = Repo.get(Permission, definerolelevelpermissionsId)
-      permission
-    end
+    Repo.all(query)
   end
 
   defp deleteRows(define_role_level_permission_params) do
