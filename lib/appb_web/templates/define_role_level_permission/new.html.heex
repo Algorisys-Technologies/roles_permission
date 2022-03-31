@@ -3,4 +3,8 @@
 
 <%= render "form.html", Map.put(assigns, :action, Routes.define_role_level_permission_path(@conn, :create, app: @conn.query_params["app"])) %>
 
+<span><%= link "Back", to: Routes.app_path(@conn, :index) %></span>
+
+<!--
 <span><%= link "Back", to: Routes.define_role_level_permission_path(@conn, :index) %></span>
+-->
