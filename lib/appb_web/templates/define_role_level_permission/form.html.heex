@@ -10,10 +10,11 @@
 
   <%= label f, :role_id %>
   <!-- <%= select f, :role_id, @roles, onchange: "val()" %> -->
-  <%= select f, :role_id, @roles, value: @roles_id, onchange: "val()" %> 
+  <%= select f, :role_id, @roles, value: @roles_id, onchange: "val()", style: "width:100%" %> 
 
-  <!-- <select id="define_role_level_permission_role_id"
-    name="define_role_level_permission[role_id]" onchange="val()">
+  <!--
+  <select id="define_role_level_permission_role_id"
+    name="define_role_level_permission[role_id]" onchange="val()" style="width: 100%;">
     <option value="1">user</option>
     <option value="2">admin</option>
     <option value="3">viewer</option>
@@ -22,39 +23,42 @@
 
   <h3> Features </h3>
 
-  <div id="roles" data-roleid="">
+  <div id="roles">
     <%= for feature <- @apps.features do %>
-      <ul>
-        <li>
-          <%= feature.name %> 
-          <%= for s1 <- @renderMaterial  do %>
-            <%= if feature.id == s1.feature_id do %>
-              <%= if s1 !== nil do %>
-                <%= if s1.flag do %>
-                  <ul>
-                    <li>
-                      <input name="define_role_level_permission[permission_id][]"
-                        checked type="checkbox" value={s1.id}>
-                      <%= s1.name %>
-                    </li>
-                  </ul>
-                <% else %>
-                  <ul>
-                    <li>
-                      <input name="define_role_level_permission[permission_id][]"
-                        type="checkbox" value={s1.id}>
-                      <%= s1.name %>
-                    </li>
-                  </ul>
-                <% end %>
+      <div style="border: 1px solid grey;margin:10px;padding:5px">
+        <%= feature.name %> 
+        <%= for s1 <- @renderMaterial  do %>
+          <%= if feature.id == s1.feature_id do %>
+            <%= if s1 !== nil do %>
+              <%= if s1.flag do %>
+                <div id={"permission#{s1.id}"} style="border: 1px solid skyblue;margin:5px;padding:5px">
+                  <input name="define_role_level_permission[permission_id][]"
+                    checked type="checkbox" value={s1.id}>
+                  <%= s1.name %>
+                  &nbsp;&nbsp;&nbsp;
+                  <span style="color:blue;font-size:x-small;cursor:pointer" onclick={"addMore(#{s1.id})"}>
+                    Add more
+                  </span>
+                </div>
+              <% else %>
+                <div id={"permission#{s1.id}"} style="border: 1px solid skyblue;margin:5px;padding:5px">
+                  <input name="define_role_level_permission[permission_id][]"
+                    type="checkbox" value={s1.id}>
+                  <%= s1.name %>
+                  &nbsp;&nbsp;&nbsp;
+                  <span style="color:blue;font-size:x-small;cursor:pointer" onclick={"addMore(#{s1.id})"}>
+                    Add more
+                  </span>
+                </div>
               <% end %>
             <% end %>
           <% end %>
-        </li>
-      </ul>
+        <% end %>
+      </div>
     <% end %>
   </div>
 
+<!--
   <%= label f, :conditionText %>
   <%= text_input f, :conditionText %>
   <%= error_tag f, :conditionText %>
@@ -62,6 +66,7 @@
   <%= label f, :conditionjson %>
   <%= text_input f, :conditionjson %>
   <%= error_tag f, :conditionjson %>
+-->
 
   <div>
     <%= submit "Save" %>
@@ -81,5 +86,56 @@
   function val() {
     var roleId = document.getElementById("define_role_level_permission_role_id").value;
     window.location.replace(urls[roleId]);
+  }
+
+  function addMore(id){
+    let permissionDiv = document.getElementById(`permission${id}`);
+    permissionDiv.innerHTML += 
+                      `<div id="innerDiv${id}" style="display: inline-flex">`+
+                        `<input id="define_role_level_permission_conditionText" 
+                          name="define_role_level_permission[conditionText][]" 
+                          type="text" style="border-radius:50px">`+
+                        `<select name="define_role_level_permission[conditionText][]" style="border-radius:50px">
+                          <option value="">--Select--</option>
+                          <option value="equals">equals</option>
+                          <option value="greaterthan">greaterthan</option>
+                          <option value="lessthan">lessthan</option>
+                          <option value="greaterthanorequal">greaterthanorequal</option>
+                          <option value="lessthan">lessthan</option>
+                          <option value="lessthanorequal">lessthanorequal</option>
+                        </select>`+
+                        `<input id="define_role_level_permission_conditionText" 
+                          name="define_role_level_permission[conditionText][]" 
+                          type="text" style="border-radius:50px">`+
+                        `<select name="define_role_level_permission[conditionText][]" style="border-radius:50px">
+                          <option value="and">and</option>
+                          <option value="or">or</option>
+                        </select>`+
+                        `<span id="add${id}" style="color:green;font-size: medium;
+                          font-weight: bold;" class="dot">+</span>`+
+                        `<span id="sub${id}" style="color:red;font-size: medium;
+                          font-weight: bold;" class="dot">-</span>`+
+                      `</div>`
+
+  let addSpan = document.querySelectorAll(`[id='add${id}']`);
+  let substractSpan = document.querySelectorAll(`[id='sub${id}']`);
+
+  addSpan.forEach((elem)=>{
+    elem.addEventListener("click", ()=>{
+      addMore(id);
+    });
+  });
+
+  var listItems = document.getElementById(`permission${id}`).getElementsByTagName("div");
+
+  // let innerDiv = document.querySelectorAll(`[id='innerDiv${id}']`); 
+
+  substractSpan.forEach((elem)=>{
+    elem.addEventListener("click", ()=>{
+      var lastElement = listItems[listItems.length - 1]
+      lastElement.parentNode.removeChild(lastElement);
+    });
+  });
+  
   }
 </script>

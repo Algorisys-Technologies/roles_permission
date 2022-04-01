@@ -67,6 +67,12 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     define_role_level_permission_params =
       Map.put(define_role_level_permission_params, "app_id", app_id)
 
+    IO.inspect(define_role_level_permission_params["conditionText"],
+      label: "define_role_level_permission_params"
+    )
+
+
+
     app =
       Repo.get!(App, app_id)
       |> Repo.preload([:features, :permissions, :roles])
