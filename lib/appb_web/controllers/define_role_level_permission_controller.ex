@@ -90,19 +90,36 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
         permissionDetail = Repo.get!(Permission, head)
 
         conditionText = define_role_level_permission_params["conditionText"]
-        conditionText = Enum.join(conditionText, " ")
-        # IO.inspect(conditionText)
+
+        indexList =
+          conditionText
+          |> Enum.with_index()
+          |> Enum.filter(fn {text, _} ->
+            length = String.length(text)
+            sliceString = String.slice(text, 0..(length - 2))
+
+            if text == "#{sliceString}#{head}" do
+              text
+            end
+          end)
+          |> Enum.map(fn {_, i} -> i end)
+
+        _first = List.first(indexList)
+        last = List.last(indexList)
+        count = Enum.count(indexList)
+        conditionTextFinal = conditionText |> Enum.slice((last - count * 4 + 1)..last)
+        conditionTextFinal = Enum.join(conditionTextFinal, " ")
 
         define_role_level_permission_params =
-          Map.put(define_role_level_permission_params, "conditionText", conditionText)
-
-        IO.inspect(define_role_level_permission_params)
+          Map.put(define_role_level_permission_params, "conditionText", conditionTextFinal)
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "permission_id", head)
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "feature_id", permissionDetail.feature_id)
+
+        IO.inspect(define_role_level_permission_params)
 
         caseDefine(
           conn,
