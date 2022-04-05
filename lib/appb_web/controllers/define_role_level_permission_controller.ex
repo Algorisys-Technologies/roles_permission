@@ -67,11 +67,9 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     define_role_level_permission_params =
       Map.put(define_role_level_permission_params, "app_id", app_id)
 
-    IO.inspect(define_role_level_permission_params["conditionText"],
-      label: "define_role_level_permission_params"
-    )
-
-
+    # IO.inspect(define_role_level_permission_params["conditionText"],
+    #   label: "define_role_level_permission_params"
+    # )
 
     app =
       Repo.get!(App, app_id)
@@ -90,6 +88,15 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     if define_role_level_permission_params["permission_id"] do
       for head <- define_role_level_permission_params["permission_id"] do
         permissionDetail = Repo.get!(Permission, head)
+
+        conditionText = define_role_level_permission_params["conditionText"]
+        conditionText = Enum.join(conditionText, " ")
+        # IO.inspect(conditionText)
+
+        define_role_level_permission_params =
+          Map.put(define_role_level_permission_params, "conditionText", conditionText)
+
+        IO.inspect(define_role_level_permission_params)
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "permission_id", head)

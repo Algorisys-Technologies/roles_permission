@@ -90,7 +90,9 @@
 
   function addMore(id){
     let permissionDiv = document.getElementById(`permission${id}`);
-    permissionDiv.innerHTML += 
+    let newDiv = document.createElement("div");
+    
+    newDiv.innerHTML += 
                       `<div id="innerDiv${id}" style="display: inline-flex">`+
                         `<input id="define_role_level_permission_conditionText" 
                           name="define_role_level_permission[conditionText][]" 
@@ -108,14 +110,16 @@
                           name="define_role_level_permission[conditionText][]" 
                           type="text" style="border-radius:50px">`+
                         `<select name="define_role_level_permission[conditionText][]" style="border-radius:50px">
-                          <option value="and">and</option>
-                          <option value="or">or</option>
+                          <option value="and${id}">and</option>
+                          <option value="or${id}">or</option>
                         </select>`+
                         `<span id="add${id}" style="color:green;font-size: medium;
                           font-weight: bold;" class="dot">+</span>`+
                         `<span id="sub${id}" style="color:red;font-size: medium;
                           font-weight: bold;" class="dot">-</span>`+
                       `</div>`
+
+  permissionDiv.appendChild(newDiv);
 
   let addSpan = document.querySelectorAll(`[id='add${id}']`);
   let substractSpan = document.querySelectorAll(`[id='sub${id}']`);
@@ -126,14 +130,14 @@
     });
   });
 
-  var listItems = document.getElementById(`permission${id}`).getElementsByTagName("div");
-
+  // let listItems = document.getElementById(`permission${id}`).getElementsByTagName("div");
   // let innerDiv = document.querySelectorAll(`[id='innerDiv${id}']`); 
 
   substractSpan.forEach((elem)=>{
     elem.addEventListener("click", ()=>{
-      var lastElement = listItems[listItems.length - 1]
-      lastElement.parentNode.removeChild(lastElement);
+     // let lastElement = listItems[listItems.length - 1]
+     // lastElement.parentNode.removeChild(lastElement);
+     permissionDiv.removeChild(newDiv)
     });
   });
   
