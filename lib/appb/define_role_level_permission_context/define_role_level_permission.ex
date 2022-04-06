@@ -4,7 +4,7 @@ defmodule Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission do
 
   schema "definerolelevelpermissions" do
     field :conditionText, :string
-    field :conditionjson, :string
+    field :conditionjson, :map, default: %{}
     # field :app_id, :id
     belongs_to(:users, Appb.Accounts.User, foreign_key: :app_id)
     # field :feature_id, :id

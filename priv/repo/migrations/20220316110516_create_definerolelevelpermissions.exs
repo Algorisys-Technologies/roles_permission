@@ -4,7 +4,7 @@ defmodule Appb.Repo.Migrations.CreateDefinerolelevelpermissions do
   def change do
     create table(:definerolelevelpermissions) do
       add :conditionText, :string
-      add :conditionjson, :string
+      add :conditionjson, :jsonb
       add :app_id, references(:apps, on_delete: :nothing)
       add :feature_id, references(:features, on_delete: :nothing)
       add :permission_id, references(:permissions, on_delete: :nothing)

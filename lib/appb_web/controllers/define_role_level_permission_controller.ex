@@ -5,7 +5,6 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
   alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
   alias Appb.AppContext.App
   alias Appb.PermissionContext.Permission
-  # alias Appb.FeatureContext.Feature
   alias Appb.Repo
   import Ecto.Query, only: [from: 2]
 
@@ -67,10 +66,6 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     define_role_level_permission_params =
       Map.put(define_role_level_permission_params, "app_id", app_id)
 
-    # IO.inspect(define_role_level_permission_params["conditionText"],
-    #   label: "define_role_level_permission_params"
-    # )
-
     app =
       Repo.get!(App, app_id)
       |> Repo.preload([:features, :permissions, :roles])
@@ -89,19 +84,22 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       for head <- define_role_level_permission_params["permission_id"] do
         permissionDetail = Repo.get!(Permission, head)
 
-        conditionTextFinal = rolesPermissionText(define_role_level_permission_params, head)
-        IO.inspect(conditionTextFinal, label: "conditionTextFinal")
+        conditionText = rolesPermissionText(define_role_level_permission_params, head)
+        finalConditions = rolePermissionJson(conditionText)
 
         define_role_level_permission_params =
-          Map.put(define_role_level_permission_params, "conditionText", conditionTextFinal)
+          Map.put(define_role_level_permission_params, "conditionjson", %{
+            "data" => finalConditions
+          })
+
+        define_role_level_permission_params =
+          Map.put(define_role_level_permission_params, "conditionText", conditionText)
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "permission_id", head)
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "feature_id", permissionDetail.feature_id)
-
-        IO.inspect(define_role_level_permission_params)
 
         caseDefine(
           conn,
@@ -116,6 +114,27 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
     conn
     |> redirect(to: Routes.define_role_level_permission_path(conn, :new, app: app.id))
+  end
+
+  defp rolePermissionJson(conditionText) do
+    if conditionText do
+      conditions = String.split(conditionText, "/n", trim: true)
+
+      conditions
+      |> Enum.map(fn c ->
+        cList = String.split(c, " ", trim: true)
+        IO.inspect(cList, label: "cList")
+
+        if Enum.count(cList) == 4 do
+          %{
+            "c1" => Enum.at(cList, 0),
+            "c2" => Enum.at(cList, 2),
+            "operator" => Enum.at(cList, 1),
+            "conditionOperator" => Enum.at(cList, 4, "and")
+          }
+        end
+      end)
+    end
   end
 
   defp rolesPermissionText(define_role_level_permission_params, head) do
@@ -138,11 +157,20 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       _first = indexList |> List.first()
       last = indexList |> List.last()
       count = indexList |> Enum.count()
-      IO.inspect(last, label: 'last')
 
       if last do
         conditionText
         |> Enum.slice((last - count * 4 + 1)..last)
+        |> Enum.map(fn text ->
+          length = String.length(text)
+          sliceString = String.slice(text, 0..(length - 2))
+
+          if text == "#{sliceString}#{head}" do
+            "#{sliceString}/n"
+          else
+            text
+          end
+        end)
         |> Enum.join(" ")
       end
     end
