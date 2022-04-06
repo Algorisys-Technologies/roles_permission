@@ -89,26 +89,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
       for head <- define_role_level_permission_params["permission_id"] do
         permissionDetail = Repo.get!(Permission, head)
 
-        conditionText = define_role_level_permission_params["conditionText"]
-
-        indexList =
-          conditionText
-          |> Enum.with_index()
-          |> Enum.filter(fn {text, _} ->
-            length = String.length(text)
-            sliceString = String.slice(text, 0..(length - 2))
-
-            if text == "#{sliceString}#{head}" do
-              text
-            end
-          end)
-          |> Enum.map(fn {_, i} -> i end)
-
-        _first = List.first(indexList)
-        last = List.last(indexList)
-        count = Enum.count(indexList)
-        conditionTextFinal = conditionText |> Enum.slice((last - count * 4 + 1)..last)
-        conditionTextFinal = Enum.join(conditionTextFinal, " ")
+        conditionTextFinal = rolesPermissionText(define_role_level_permission_params, head)
+        IO.inspect(conditionTextFinal, label: "conditionTextFinal")
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "conditionText", conditionTextFinal)
@@ -134,6 +116,36 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
     conn
     |> redirect(to: Routes.define_role_level_permission_path(conn, :new, app: app.id))
+  end
+
+  defp rolesPermissionText(define_role_level_permission_params, head) do
+    if define_role_level_permission_params["conditionText"] do
+      conditionText = define_role_level_permission_params["conditionText"]
+
+      indexList =
+        conditionText
+        |> Enum.with_index()
+        |> Enum.filter(fn {text, _} ->
+          length = String.length(text)
+          sliceString = String.slice(text, 0..(length - 2))
+
+          if text == "#{sliceString}#{head}" do
+            text
+          end
+        end)
+        |> Enum.map(fn {_, i} -> i end)
+
+      _first = indexList |> List.first()
+      last = indexList |> List.last()
+      count = indexList |> Enum.count()
+      IO.inspect(last, label: 'last')
+
+      if last do
+        conditionText
+        |> Enum.slice((last - count * 4 + 1)..last)
+        |> Enum.join(" ")
+      end
+    end
   end
 
   defp caseDefine(
