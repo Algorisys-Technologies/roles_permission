@@ -7,6 +7,9 @@
   </li>
 </ul>
 
+<span><%= link "List of features", to: Routes.feature_path(@conn, :index) %></span> |
+<span><%= link "List of permissions", to: Routes.permission_path(@conn, :index) %></span> |
+<span><%= link "List of roles", to: Routes.role_path(@conn, :index) %></span>
 
 <h4> Features </h4><span>
 <%= link "New Feature", to: Routes.feature_path(@conn, :new, app_id: @app.id) %></span>

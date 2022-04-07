@@ -89,7 +89,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
         define_role_level_permission_params =
           Map.put(define_role_level_permission_params, "conditionjson", %{
-            "data" => finalConditions
+            data: finalConditions
           })
 
         define_role_level_permission_params =
@@ -127,10 +127,10 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
         if Enum.count(cList) == 4 do
           %{
-            "c1" => Enum.at(cList, 0),
-            "c2" => Enum.at(cList, 2),
-            "operator" => Enum.at(cList, 1),
-            "conditionOperator" => Enum.at(cList, 4, "and")
+            c1: Enum.at(cList, 0),
+            c2: Enum.at(cList, 2),
+            operator: Enum.at(cList, 1),
+            conditionOperator: Enum.at(cList, 4, "and")
           }
         end
       end)
