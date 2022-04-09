@@ -111,7 +111,7 @@
                         `<input id="define_role_level_permission_conditionText" 
                           name="define_role_level_permission[conditionText][]" 
                           type="text" style="border-radius:50px" required>`+
-                        `<select name="define_role_level_permission[conditionText][]" style="border-radius:50px">
+                        `<select id="conditionOperator" name="define_role_level_permission[conditionText][]" style="border-radius:50px">
                           <option value="and${id}">and</option>
                           <option value="or${id}">or</option>
                         </select>`+
@@ -122,6 +122,17 @@
                       `</div>`
 
   permissionDiv.appendChild(newDiv);
+
+  let select= document.querySelectorAll("[id='conditionOperator']");
+
+  select.forEach((elem)=>{
+    elem.addEventListener("change", ()=>{
+      let selectedValue = elem.value;
+      select.forEach((innerElem)=>{
+        innerElem.value = selectedValue
+      });
+    });
+  });
 
   let addSpan = document.querySelectorAll(`[id='add${id}']`);
   let substractSpan = document.querySelectorAll(`[id='sub${id}']`);
