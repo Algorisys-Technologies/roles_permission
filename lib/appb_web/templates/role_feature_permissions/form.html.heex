@@ -13,8 +13,8 @@
   <%= select f, :role_id, @roles, value: @roles_id, onchange: "val()", style: "width:100%" %> 
 
   <!--
-  <select id="define_role_level_permission_role_id"
-    name="define_role_level_permission[role_id]" onchange="val()" style="width: 100%;">
+  <select id="role_feature_permissions_role_id"
+    name="role_feature_permissions[role_id]" onchange="val()" style="width: 100%;">
     <option value="1">user</option>
     <option value="2">admin</option>
     <option value="3">viewer</option>
@@ -32,7 +32,7 @@
             <%= if s1 !== nil do %>
               <%= if s1.flag do %>
                 <div id={"permission#{s1.id}"} style="border: 1px solid skyblue;margin:5px;padding:5px">
-                  <input name="define_role_level_permission[permission_id][]"
+                  <input name="role_feature_permissions[permission_id][]"
                     checked type="checkbox" value={s1.id}>
                   <%= s1.name %>
                   &nbsp;&nbsp;&nbsp;
@@ -42,7 +42,7 @@
                 </div>
               <% else %>
                 <div id={"permission#{s1.id}"} style="border: 1px solid skyblue;margin:5px;padding:5px">
-                  <input name="define_role_level_permission[permission_id][]"
+                  <input name="role_feature_permissions[permission_id][]"
                     type="checkbox" value={s1.id}>
                   <%= s1.name %>
                   &nbsp;&nbsp;&nbsp;
@@ -74,19 +74,19 @@
 
 <script>
   var urls = {
-   1: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 1) %>",
-   2: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 2) %>",
-   3: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 3) %>",
-   4: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 4) %>",
-   5: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 5) %>",
-   6: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 6) %>",
-   7: "<%= Routes.define_role_level_permission_path(@conn, :new, app: @apps.id, filter: 7) %>"
+   1: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 1) %>",
+   2: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 2) %>",
+   3: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 3) %>",
+   4: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 4) %>",
+   5: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 5) %>",
+   6: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 6) %>",
+   7: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 7) %>"
   }
 </script>
 
 <script>
   function val() {
-    var roleId = document.getElementById("define_role_level_permission_role_id").value;
+    var roleId = document.getElementById("role_feature_permissions_role_id").value;
     window.location.replace(urls[roleId]);
   }
 
@@ -96,10 +96,10 @@
     
     newDiv.innerHTML += 
                       `<div id="innerDiv${id}" style="display: inline-flex">`+
-                        `<input id="define_role_level_permission_conditionText" 
-                          name="define_role_level_permission[conditionText][]" 
+                        `<input id="role_feature_permissions_conditionText" 
+                          name="role_feature_permissions[conditionText][]" 
                           type="text" style="border-radius:50px" required>`+
-                        `<select name="define_role_level_permission[conditionText][]" required style="border-radius:50px">
+                        `<select name="role_feature_permissions[conditionText][]" required style="border-radius:50px">
                           <option value="">--Select--</option>
                           <option value="equals">equals</option>
                           <option value="greaterthan">greaterthan</option>
@@ -108,10 +108,10 @@
                           <option value="lessthan">lessthan</option>
                           <option value="lessthanorequal">lessthanorequal</option>
                         </select>`+
-                        `<input id="define_role_level_permission_conditionText" 
-                          name="define_role_level_permission[conditionText][]" 
+                        `<input id="role_feature_permissions_conditionText" 
+                          name="role_feature_permissions[conditionText][]" 
                           type="text" style="border-radius:50px" required>`+
-                        `<select id="conditionOperator" name="define_role_level_permission[conditionText][]" style="border-radius:50px">
+                        `<select id="conditionOperator" name="role_feature_permissions[conditionText][]" style="border-radius:50px">
                           <option value="and${id}">and</option>
                           <option value="or${id}">or</option>
                         </select>`+

@@ -1,0 +1,29 @@
+<h1>Listing rolefeaturepermissions</h1>
+
+<span><%= link "New rolefeaturepermissions", to: Routes.role_feature_permissions_path(@conn, :new) %></span>
+
+<table>
+  <thead>
+    <tr>
+      <th>Conditiontext</th>
+      <th>Conditionjson</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for role_feature_permissions <- @rolefeaturepermissions do %>
+    <tr>
+      <td><%= role_feature_permissions.conditionText %></td>
+      <td><%= role_feature_permissions.conditionjson %></td>
+
+      <td>
+        <span><%= link "Show", to: Routes.role_feature_permissions_path(@conn, :show, role_feature_permissions) %></span>
+        <span><%= link "Edit", to: Routes.role_feature_permissions_path(@conn, :edit, role_feature_permissions) %></span>
+        <span><%= link "Delete", to: Routes.role_feature_permissions_path(@conn, :delete, role_feature_permissions), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+

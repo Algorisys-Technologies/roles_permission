@@ -3,7 +3,7 @@ defmodule Appb.PermissionContext.Permission do
   import Ecto.Changeset
   alias Appb.AppContext.App
   alias Appb.FeatureContext.Feature
-  alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
+  alias Appb.RoleFeaturePermissionsContext.RoleFeaturePermissions
 
   schema "permissions" do
     field :name, :string
@@ -11,7 +11,7 @@ defmodule Appb.PermissionContext.Permission do
     belongs_to(:apps, App, foreign_key: :app_id)
     # field :feature_id, :id
     belongs_to(:features, Feature, foreign_key: :feature_id)
-    has_many(:definerolelevelpermissions, DefineRoleLevelPermission, foreign_key: :permission_id)
+    has_many(:rolefeaturepermissions, RoleFeaturePermissions, foreign_key: :permission_id)
     timestamps()
   end
 

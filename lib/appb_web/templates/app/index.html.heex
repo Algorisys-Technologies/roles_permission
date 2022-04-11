@@ -17,7 +17,7 @@
 
       <td>
         <span>
-        <%= link "New Define role level permission", to: Routes.define_role_level_permission_path(@conn, :new, app: app) %>
+        <%= link "New Define role level permission", to: Routes.role_feature_permissions_path(@conn, :new, app: app) %>
         </span> |
         <span><%= link "Show", to: Routes.app_path(@conn, :show, app) %></span> |
         <span><%= link "Edit", to: Routes.app_path(@conn, :edit, app) %></span> |

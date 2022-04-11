@@ -90,9 +90,9 @@ defmodule AppbWeb.Router do
     resources("/permissions", PermissionController)
     # mix phx.gen.html RoleContext Role roles name app_id:references:apps
     resources("/roles", RoleController)
-    # mix phx.gen.html DefineRoleLevelPermissionContext DefineRoleLevelPermission definerolelevelpermissions conditionText:string conditionjson:string app_id:references:apps feature_id:references:features
+    # mix phx.gen.html RoleFeaturePermissionsContext RoleFeaturePermissions rolefeaturepermissions conditionText:string conditionjson:string app_id:references:apps feature_id:references:features
     # permission_id:references:permissions role_id:references:roles
-    resources "/definerolelevelpermissions", DefineRoleLevelPermissionController
+    resources "/definerolelevelpermissions", RoleFeaturePermissionsController
   end
 
   scope "/", AppbWeb do

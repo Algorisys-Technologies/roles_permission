@@ -1,0 +1,18 @@
+<h1>Show Define role level permission</h1>
+
+<ul>
+
+  <li>
+    <strong>Conditiontext:</strong>
+    <%= @role_feature_permissions.conditionText %>
+  </li>
+
+  <li>
+    <strong>Conditionjson:</strong>
+    <%= @role_feature_permissions.conditionjson %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.role_feature_permissions_path(@conn, :edit, @role_feature_permissions) %></span> |
+<span><%= link "Back", to: Routes.role_feature_permissions_path(@conn, :index) %></span>

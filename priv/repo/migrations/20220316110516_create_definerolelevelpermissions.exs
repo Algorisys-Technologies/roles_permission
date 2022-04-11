@@ -1,8 +1,8 @@
-defmodule Appb.Repo.Migrations.CreateDefinerolelevelpermissions do
+defmodule Appb.Repo.Migrations.Createrolefeaturepermissions do
   use Ecto.Migration
 
   def change do
-    create table(:definerolelevelpermissions) do
+    create table(:rolefeaturepermissions) do
       add :conditionText, :string
       add :conditionjson, :jsonb
       add :app_id, references(:apps, on_delete: :nothing)
@@ -13,9 +13,9 @@ defmodule Appb.Repo.Migrations.CreateDefinerolelevelpermissions do
       timestamps()
     end
 
-    create index(:definerolelevelpermissions, [:app_id])
-    create index(:definerolelevelpermissions, [:feature_id])
-    create index(:definerolelevelpermissions, [:permission_id])
-    create index(:definerolelevelpermissions, [:role_id])
+    create index(:rolefeaturepermissions, [:app_id])
+    create index(:rolefeaturepermissions, [:feature_id])
+    create index(:rolefeaturepermissions, [:permission_id])
+    create index(:rolefeaturepermissions, [:role_id])
   end
 end

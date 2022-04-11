@@ -1,24 +1,24 @@
-defmodule AppbWeb.DefineRoleLevelPermissionController do
+defmodule AppbWeb.RoleFeaturePermissionsController do
   use AppbWeb, :controller
 
-  alias Appb.DefineRoleLevelPermissionContext
-  alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
+  alias Appb.RoleFeaturePermissionsContext
+  alias Appb.RoleFeaturePermissionsContext.RoleFeaturePermissions
   alias Appb.AppContext.App
   alias Appb.PermissionContext.Permission
   alias Appb.Repo
   import Ecto.Query, only: [from: 2]
 
   def index(conn, _params) do
-    definerolelevelpermissions =
-      DefineRoleLevelPermissionContext.list_definerolelevelpermissions()
+    rolefeaturepermissions =
+      RoleFeaturePermissionsContext.list_rolefeaturepermissions()
 
-    render(conn, "index.html", definerolelevelpermissions: definerolelevelpermissions)
+    render(conn, "index.html", rolefeaturepermissions: rolefeaturepermissions)
   end
 
   def new(conn, _params) do
     changeset =
-      DefineRoleLevelPermissionContext.change_define_role_level_permission(
-        %DefineRoleLevelPermission{}
+      RoleFeaturePermissionsContext.change_role_feature_permissions(
+        %RoleFeaturePermissions{}
       )
 
     app_id = conn.query_params["app"]
@@ -33,8 +33,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     appRoleId = role_id
 
     if is_nil(role_id) do
-      definerolelevelpermissions = roleBasedPermissions()
-      renderPermissions = uiRender(app.features, app.permissions, definerolelevelpermissions)
+      rolefeaturepermissions = roleBasedPermissions()
+      renderPermissions = uiRender(app.features, app.permissions, rolefeaturepermissions)
       renderMaterial = uiRenderFinal(renderPermissions, 1)
 
       render(conn, "new.html",
@@ -45,8 +45,8 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
         renderMaterial: renderMaterial
       )
     else
-      definerolelevelpermissions = roleBasedPermissions(role_id)
-      renderPermissions = uiRender(app.features, app.permissions, definerolelevelpermissions)
+      rolefeaturepermissions = roleBasedPermissions(role_id)
+      renderPermissions = uiRender(app.features, app.permissions, rolefeaturepermissions)
       renderMaterial = uiRenderFinal(renderPermissions, role_id)
 
       render(conn, "new.html",
@@ -59,12 +59,12 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     end
   end
 
-  def create(conn, %{"define_role_level_permission" => define_role_level_permission_params}) do
-    # app_id added in define_role_level_permission table
+  def create(conn, %{"role_feature_permissions" => role_feature_permissions_params}) do
+    # app_id added in role_feature_permissions table
     app_id = conn.query_params["app"]
 
-    define_role_level_permission_params =
-      Map.put(define_role_level_permission_params, "app_id", app_id)
+    role_feature_permissions_params =
+      Map.put(role_feature_permissions_params, "app_id", app_id)
 
     app =
       Repo.get!(App, app_id)
@@ -72,38 +72,38 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
     appRole = Enum.map(app.roles, &{"#{&1.name}", &1.id})
     # appRoleId = Enum.map(app.roles, & &1.id)
-    role_id = define_role_level_permission_params["role_id"]
-    definerolelevelpermissions = roleBasedPermissions(role_id)
+    role_id = role_feature_permissions_params["role_id"]
+    rolefeaturepermissions = roleBasedPermissions(role_id)
 
-    renderPermissions = uiRender(app.features, app.permissions, definerolelevelpermissions)
+    renderPermissions = uiRender(app.features, app.permissions, rolefeaturepermissions)
     renderMaterial = uiRenderFinal(renderPermissions, role_id)
 
-    deleteRows(define_role_level_permission_params)
+    deleteRows(role_feature_permissions_params)
 
-    if define_role_level_permission_params["permission_id"] do
-      for head <- define_role_level_permission_params["permission_id"] do
+    if role_feature_permissions_params["permission_id"] do
+      for head <- role_feature_permissions_params["permission_id"] do
         permissionDetail = Repo.get!(Permission, head)
 
-        conditionText = rolesPermissionText(define_role_level_permission_params, head)
+        conditionText = rolesPermissionText(role_feature_permissions_params, head)
         finalConditions = rolePermissionJson(conditionText)
 
-        define_role_level_permission_params =
-          Map.put(define_role_level_permission_params, "conditionjson", %{
+        role_feature_permissions_params =
+          Map.put(role_feature_permissions_params, "conditionjson", %{
             data: finalConditions
           })
 
-        define_role_level_permission_params =
-          Map.put(define_role_level_permission_params, "conditionText", conditionText)
+        role_feature_permissions_params =
+          Map.put(role_feature_permissions_params, "conditionText", conditionText)
 
-        define_role_level_permission_params =
-          Map.put(define_role_level_permission_params, "permission_id", head)
+        role_feature_permissions_params =
+          Map.put(role_feature_permissions_params, "permission_id", head)
 
-        define_role_level_permission_params =
-          Map.put(define_role_level_permission_params, "feature_id", permissionDetail.feature_id)
+        role_feature_permissions_params =
+          Map.put(role_feature_permissions_params, "feature_id", permissionDetail.feature_id)
 
         caseDefine(
           conn,
-          define_role_level_permission_params,
+          role_feature_permissions_params,
           app,
           appRole,
           role_id,
@@ -113,7 +113,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     end
 
     conn
-    |> redirect(to: Routes.define_role_level_permission_path(conn, :new, app: app.id))
+    |> redirect(to: Routes.role_feature_permissions_path(conn, :new, app: app.id))
   end
 
   defp rolePermissionJson(conditionText) do
@@ -137,9 +137,9 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     end
   end
 
-  defp rolesPermissionText(define_role_level_permission_params, head) do
-    if define_role_level_permission_params["conditionText"] do
-      conditionText = define_role_level_permission_params["conditionText"]
+  defp rolesPermissionText(role_feature_permissions_params, head) do
+    if role_feature_permissions_params["conditionText"] do
+      conditionText = role_feature_permissions_params["conditionText"]
 
       indexList =
         conditionText
@@ -178,16 +178,16 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
   defp caseDefine(
          conn,
-         define_role_level_permission_params,
+         role_feature_permissions_params,
          app,
          appRole,
          role_id,
          renderMaterial
        ) do
-    case DefineRoleLevelPermissionContext.create_define_role_level_permission(
-           define_role_level_permission_params
+    case RoleFeaturePermissionsContext.create_role_feature_permissions(
+           role_feature_permissions_params
          ) do
-      {:ok, _define_role_level_permission} ->
+      {:ok, _role_feature_permissions} ->
         conn
         |> put_flash(:info, "Define role level permission created successfully.")
 
@@ -202,10 +202,10 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     end
   end
 
-  defp uiRender(_features, permissions, definerolelevelpermissions) do
+  defp uiRender(_features, permissions, rolefeaturepermissions) do
     for permission <- permissions do
-      if definerolelevelpermissions && definerolelevelpermissions !== [] do
-        for define <- definerolelevelpermissions do
+      if rolefeaturepermissions && rolefeaturepermissions !== [] do
+        for define <- rolefeaturepermissions do
           if define.permission_id == permission.id do
             Map.put(permission, :flag, true)
           else
@@ -226,7 +226,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
         for [s1, s2 | _] <- renderPermissions do
           isPermissionIdExist =
             Repo.exists?(
-              from d in DefineRoleLevelPermission,
+              from d in RoleFeaturePermissions,
                 where: d.permission_id == ^s1.id and d.role_id == ^role_id
             )
 
@@ -246,7 +246,7 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
 
   defp roleBasedPermissions(role_id \\ 1) do
     query =
-      from(d in DefineRoleLevelPermission,
+      from(d in RoleFeaturePermissions,
         join: p in Permission,
         where: p.id == d.permission_id and d.role_id == type(^role_id, :integer)
       )
@@ -254,11 +254,11 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
     Repo.all(query)
   end
 
-  defp deleteRows(define_role_level_permission_params) do
-    role_id = define_role_level_permission_params["role_id"]
+  defp deleteRows(role_feature_permissions_params) do
+    role_id = role_feature_permissions_params["role_id"]
 
     query =
-      from(d in DefineRoleLevelPermission,
+      from(d in RoleFeaturePermissions,
         where: d.role_id == type(^role_id, :integer)
       )
 
@@ -266,64 +266,64 @@ defmodule AppbWeb.DefineRoleLevelPermissionController do
   end
 
   def show(conn, %{"id" => id}) do
-    define_role_level_permission =
-      DefineRoleLevelPermissionContext.get_define_role_level_permission!(id)
+    role_feature_permissions =
+      RoleFeaturePermissionsContext.get_role_feature_permissions!(id)
 
-    render(conn, "show.html", define_role_level_permission: define_role_level_permission)
+    render(conn, "show.html", role_feature_permissions: role_feature_permissions)
   end
 
   def edit(conn, %{"id" => id}) do
-    define_role_level_permission =
-      DefineRoleLevelPermissionContext.get_define_role_level_permission!(id)
+    role_feature_permissions =
+      RoleFeaturePermissionsContext.get_role_feature_permissions!(id)
 
     changeset =
-      DefineRoleLevelPermissionContext.change_define_role_level_permission(
-        define_role_level_permission
+      RoleFeaturePermissionsContext.change_role_feature_permissions(
+        role_feature_permissions
       )
 
     render(conn, "edit.html",
-      define_role_level_permission: define_role_level_permission,
+      role_feature_permissions: role_feature_permissions,
       changeset: changeset
     )
   end
 
   def update(conn, %{
         "id" => id,
-        "define_role_level_permission" => define_role_level_permission_params
+        "role_feature_permissions" => role_feature_permissions_params
       }) do
-    define_role_level_permission =
-      DefineRoleLevelPermissionContext.get_define_role_level_permission!(id)
+    role_feature_permissions =
+      RoleFeaturePermissionsContext.get_role_feature_permissions!(id)
 
-    case DefineRoleLevelPermissionContext.update_define_role_level_permission(
-           define_role_level_permission,
-           define_role_level_permission_params
+    case RoleFeaturePermissionsContext.update_role_feature_permissions(
+           role_feature_permissions,
+           role_feature_permissions_params
          ) do
-      {:ok, define_role_level_permission} ->
+      {:ok, role_feature_permissions} ->
         conn
         |> put_flash(:info, "Define role level permission updated successfully.")
         |> redirect(
-          to: Routes.define_role_level_permission_path(conn, :show, define_role_level_permission)
+          to: Routes.role_feature_permissions_path(conn, :show, role_feature_permissions)
         )
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html",
-          define_role_level_permission: define_role_level_permission,
+          role_feature_permissions: role_feature_permissions,
           changeset: changeset
         )
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    define_role_level_permission =
-      DefineRoleLevelPermissionContext.get_define_role_level_permission!(id)
+    role_feature_permissions =
+      RoleFeaturePermissionsContext.get_role_feature_permissions!(id)
 
-    {:ok, _define_role_level_permission} =
-      DefineRoleLevelPermissionContext.delete_define_role_level_permission(
-        define_role_level_permission
+    {:ok, _role_feature_permissions} =
+      RoleFeaturePermissionsContext.delete_role_feature_permissions(
+        role_feature_permissions
       )
 
     conn
     |> put_flash(:info, "Define role level permission deleted successfully.")
-    |> redirect(to: Routes.define_role_level_permission_path(conn, :index))
+    |> redirect(to: Routes.role_feature_permissions_path(conn, :index))
   end
 end

@@ -1,0 +1,5 @@
+<h1>Edit Define role level permission</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.role_feature_permissions_path(@conn, :update, @role_feature_permissions)) %>
+
+<span><%= link "Back", to: Routes.role_feature_permissions_path(@conn, :index) %></span>

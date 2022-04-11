@@ -1,8 +1,8 @@
-defmodule Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission do
+defmodule Appb.RoleFeaturePermissionsContext.RoleFeaturePermissions do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "definerolelevelpermissions" do
+  schema "rolefeaturepermissions" do
     field :conditionText, :string
     field :conditionjson, :map, default: %{}
     # field :app_id, :id
@@ -18,8 +18,8 @@ defmodule Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission do
   end
 
   @doc false
-  def changeset(define_role_level_permission, attrs) do
-    define_role_level_permission
+  def changeset(role_feature_permissions, attrs) do
+    role_feature_permissions
     |> cast(attrs, [
       :conditionText,
       :conditionjson,

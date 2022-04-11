@@ -5,7 +5,7 @@ defmodule Appb.AppContext.App do
   alias Appb.FeatureContext.Feature
   alias Appb.RoleContext.Role
   alias Appb.PermissionContext.Permission
-  alias Appb.DefineRoleLevelPermissionContext.DefineRoleLevelPermission
+  alias Appb.RoleFeaturePermissionsContext.RoleFeaturePermissions
 
   schema "apps" do
     field :name, :string
@@ -15,7 +15,7 @@ defmodule Appb.AppContext.App do
     has_many(:features, Feature, foreign_key: :app_id)
     has_many(:roles, Role, foreign_key: :app_id)
     has_many(:permissions, Permission, foreign_key: :app_id)
-    has_many(:definerolelevelpermissions, DefineRoleLevelPermission, foreign_key: :app_id)
+    has_many(:rolefeaturepermissions, RoleFeaturePermissions, foreign_key: :app_id)
     timestamps()
   end
 
