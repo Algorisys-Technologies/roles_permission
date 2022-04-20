@@ -29,7 +29,7 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
       |> Repo.preload([:features, :permissions, :roles])
 
     appRole = Enum.map(app.roles, &{"#{&1.name}", &1.id})
-    # appRoleId = Enum.map(app.roles, & &1.id)
+    appRoleIds = Enum.map(app.roles, & &1.id)
     appRoleId = role_id
 
     if is_nil(role_id) do
@@ -42,7 +42,8 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
         apps: app,
         roles: appRole,
         roles_id: appRoleId,
-        renderMaterial: renderMaterial
+        renderMaterial: renderMaterial,
+        appRoleIds: appRoleIds
       )
     else
       rolefeaturepermissions = roleBasedPermissions(role_id)
@@ -54,7 +55,8 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
         apps: app,
         roles: appRole,
         roles_id: appRoleId,
-        renderMaterial: renderMaterial
+        renderMaterial: renderMaterial,
+        appRoleIds: appRoleIds
       )
     end
   end
@@ -71,7 +73,7 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
       |> Repo.preload([:features, :permissions, :roles])
 
     appRole = Enum.map(app.roles, &{"#{&1.name}", &1.id})
-    # appRoleId = Enum.map(app.roles, & &1.id)
+    appRoleIds = Enum.map(app.roles, & &1.id)
     role_id = role_feature_permissions_params["role_id"]
     rolefeaturepermissions = roleBasedPermissions(role_id)
 
@@ -107,7 +109,8 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
           app,
           appRole,
           role_id,
-          renderMaterial
+          renderMaterial,
+          appRoleIds
         )
       end
     end
@@ -182,7 +185,8 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
          app,
          appRole,
          role_id,
-         renderMaterial
+         renderMaterial,
+         appRoleIds
        ) do
     case RoleFeaturePermissionsContext.create_role_feature_permissions(
            role_feature_permissions_params
@@ -197,7 +201,8 @@ defmodule AppbWeb.RoleFeaturePermissionsController do
           apps: app,
           roles: appRole,
           roles_id: role_id,
-          renderMaterial: renderMaterial
+          renderMaterial: renderMaterial,
+          appRoleIds: appRoleIds
         )
     end
   end

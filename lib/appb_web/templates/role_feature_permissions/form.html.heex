@@ -73,14 +73,10 @@
 </.form>
 
 <script>
-  var urls = {
-   1: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 1) %>",
-   2: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 2) %>",
-   3: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 3) %>",
-   4: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 4) %>",
-   5: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 5) %>",
-   6: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 6) %>",
-   7: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: 7) %>"
+  var urls={
+    <%= for id <- @appRoleIds do %>
+      <%= id %>: "<%= Routes.role_feature_permissions_path(@conn, :new, app: @apps.id, filter: id) %>",
+    <% end %>
   }
 </script>
 
